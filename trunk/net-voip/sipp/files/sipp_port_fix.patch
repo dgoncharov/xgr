@@ -1,0 +1,12 @@
+diff -urb sipp.svn_orig/call.cpp sipp.svn_fixed/call.cpp
+--- sipp.svn_orig/call.cpp	2008-12-19 13:14:51.000000000 +0300
++++ sipp.svn/call.cpp	2008-12-19 13:16:34.000000000 +0300
+@@ -192,7 +192,7 @@
+       /* m=audio not found */
+       return 0;
+     }
+-    begin += strlen(pattern) - 1;
++    begin += strlen(pattern);
+     end = strstr(begin, "\r\n");
+     if (!end)
+       ERROR("get_remote_port_media: no CRLF found");
