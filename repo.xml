@@ -1,0 +1,10 @@
+ <repo quality="experimental" status="unofficial">
+   <name><![CDATA[xgr]]></name>
+   <description><![CDATA[ebuilds of misc packages which are not present in the portage tree]]></description>
+   <homepage>http://github.com/dgoncharov/xgr</homepage>
+   <owner>
+     <email>dgoncharov@users.sf.net</email>
+   </owner>
+   <source type="git">git://github.com/dgoncharov/xgr.git</source>
+</repo>
+
