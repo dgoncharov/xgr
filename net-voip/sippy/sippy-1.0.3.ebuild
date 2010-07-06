@@ -6,7 +6,7 @@ inherit distutils
 
 DESCRIPTION="RFC3261-compliant SIP B2BUA"
 HOMEPAGE="http://b2bua.org"
-SRC_URI="http://b2bua.org/chrome/site/sippy-1.0.3.tar.gz"
+SRC_URI="http://b2bua.org/chrome/site/${P}.tar.gz"
 IUSE=""
 LICENSE="GPL-2"
 SLOT="0"
