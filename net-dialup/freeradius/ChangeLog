@@ -4,6 +4,10 @@
 
 +freeradius-2.1.9 (05 Jul 2010)
 
+  10 Jul 2010; Dmitry Goncharov <dgoncharov@users.sf.net>
+  +freeradius-2.1.9.ebuild-r1:
+  This ebuild contains a patch which lets perl modules work out of the box.
+
   05 Jul 2010; Dmitry Goncharov <dgoncharov@users.sf.net>
   +freeradius-2.1.9.ebuild:
   Version bump.
