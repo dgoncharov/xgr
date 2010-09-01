@@ -1,10 +1,8 @@
-# Copyright 2009 Dmitry Goncharov 
-# Distributed under the terms of the BSD license
+# Copyright 1999-2010 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
 inherit eutils
-
-EAPI="1"
 
 DESCRIPTION="A small command line utility which moves files and directories by regular expressions"
 HOMEPAGE="http://remv.sf.net"
@@ -17,20 +15,18 @@ RDEPEND=">=dev-libs/boost-1.37"
 DEPEND=${RDEPEND}
 
 src_unpack() {
-    unpack ${A}
+	unpack ${A}
 }
 
 src_compile() {
-    econf || die "econf failed"
-    emake || die "make failed"
+	econf || die "econf failed"
+	emake || die "make failed"
 }
 
 src_test() {
-    make check || die "make check failed"
+	make check || die "make check failed"
 }
 
 src_install() {
-    emake DESTDIR="${D}" install || die "emake install failed"
+	emake DESTDIR="${D}" install || die "emake install failed"
 }
-
-

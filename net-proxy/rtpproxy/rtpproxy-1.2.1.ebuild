@@ -1,10 +1,8 @@
-# Copyright 1999-2008 Gentoo Foundation
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
 inherit eutils
-
-EAPI="1"
 
 DESCRIPTION="Proxy server for RTP streams"
 HOMEPAGE="http://www.rtpproxy.org"
@@ -17,11 +15,10 @@ RDEPEND=""
 DEPEND=${RDEPEND}
 
 src_compile() {
-    econf || die "econf failed"
-    emake || die "make failed"
+	econf || die "econf failed"
+	emake || die "make failed"
 }
 
 src_install() {
-    emake DESTDIR="${D}" install || die "emake install failed"
+	emake DESTDIR="${D}" install || die "emake install failed"
 }
-
