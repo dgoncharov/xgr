@@ -12,12 +12,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE=""
 SLOT="0"
 RDEPEND=""
-DEPEND=${RDEPEND}
-
-src_compile() {
-	econf || die "econf failed"
-	emake || die "make failed"
-}
+DEPEND="${RDEPEND}"
 
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
