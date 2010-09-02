@@ -12,11 +12,8 @@ KEYWORDS="~amd64 ~x86"
 IUSE=""
 SLOT="0"
 RDEPEND=">=dev-libs/boost-1.37"
-DEPEND=${RDEPEND}
+DEPEND="${RDEPEND}"
 
-# src_install() has to be defined.
-# For an unknown reason the default src_install() installs the package w/o
-# creating proper CONTENTS file in /var/db.
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
 }
