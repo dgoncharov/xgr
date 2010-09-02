@@ -17,11 +17,10 @@ RDEPEND="
 	pcap? ( net-libs/libpcap )
 	sys-libs/ncurses
 	"
-DEPEND=${RDEPEND}
+DEPEND="${RDEPEND}"
 
 src_unpack() {
 	unpack ${A}
-	cd "${S}"
 	epatch "${FILESDIR}"/gcc-4.3.2-sipp.patch
 	epatch "${FILESDIR}"/sipp_port_fix.patch
 }
