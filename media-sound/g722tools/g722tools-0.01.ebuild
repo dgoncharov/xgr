@@ -11,17 +11,9 @@ LICENSE="BSD"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
 SLOT="0"
-
-src_unpack() {
-	unpack ${A}
-}
-
-src_compile() {
-	econf || die "econf failed"
-	emake || die "make failed"
-}
+DEPEND=""
+RDEPEND="${DEPEND}"
 
 src_install() {
-	cd g722tools
 	emake DESTDIR="${D}" install || die "emake install failed"
 }
