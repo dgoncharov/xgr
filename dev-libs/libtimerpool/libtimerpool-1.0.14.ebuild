@@ -12,18 +12,8 @@ KEYWORDS="~amd64 ~x86"
 IUSE=""
 SLOT="0"
 RDEPEND=">=dev-libs/boost-1.37"
-DEPEND=${RDEPEND}
-
-src_unpack() {
-	unpack ${A}
-}
-
-src_compile() {
-	econf || die "econf failed"
-	emake || die "make failed"
-}
+DEPEND="${RDEPEND}"
 
 src_install() {
-	cd libtimerpool
 	emake DESTDIR="${D}" install || die "emake install failed"
 }
