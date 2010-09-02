@@ -12,7 +12,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~x86 ~amd64"
 RDEPEND="dev-python/twisted"
-DEPEND=${RDEPEND}
+DEPEND="${RDEPEND}"
 
 src_install() {
 	distutils_src_install
