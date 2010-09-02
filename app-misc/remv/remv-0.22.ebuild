@@ -14,19 +14,9 @@ SLOT="0"
 RDEPEND=">=dev-libs/boost-1.37"
 DEPEND=${RDEPEND}
 
-src_unpack() {
-	unpack ${A}
-}
-
-src_compile() {
-	econf || die "econf failed"
-	emake || die "make failed"
-}
-
-src_test() {
-	make check || die "make check failed"
-}
-
+# src_install() has to be defined.
+# For an unknown reason the default src_install() installs the package w/o
+# creating proper CONTENTS file in /var/db.
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
 }
