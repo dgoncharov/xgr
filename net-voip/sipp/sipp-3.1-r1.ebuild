@@ -13,7 +13,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE="ssl pcap"
 SLOT="0"
 RDEPEND="
-	openssl? ( dev-libs/openssl )
+	ssl? ( dev-libs/openssl )
 	pcap? ( net-libs/libpcap )
 	sys-libs/ncurses
 	"
@@ -27,18 +27,18 @@ src_unpack() {
 
 src_compile() {
 	cd "${WORKDIR}"/sipp.svn
-	if use openssl; then
+	if use ssl; then
 		if use pcap; then
-		emake pcapplay_ossl || die "make failed"
-	else
-		emake ossl || die "make failed"
-	fi
+			emake pcapplay_ossl || die "make failed"
+		else
+			emake ossl || die "make failed"
+		fi
 	else
 		if use pcap; then
-		emake pcapplay || die "make failed"
-	else
-		emake all || die "make failed"
-	fi
+			emake pcapplay || die "make failed"
+		else
+			emake all || die "make failed"
+		fi
 	fi
 }
 

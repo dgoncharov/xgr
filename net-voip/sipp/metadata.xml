@@ -6,5 +6,9 @@
 		<email>dgoncharov@users.sf.net</email>
 		<name>Dmitry Goncharov</name>
 	</maintainer>
+	<use>
+		<flag name='ssl'>Enable ssl support</flag>
+		<flag name='pcap'>Enable sipp to play sound files in the pcap format</flag>
+	</use>
 </pkgmetadata>
 
