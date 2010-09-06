@@ -11,7 +11,7 @@ SRC_URI="http://kamailio.org/pub/kamailio/${PV}/src/${MY_P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86"
+KEYWORDS="~x86 ~amd64"
 IUSE="debug ipv6 mysql postgres radius jabber ssl cpl unixodbc"
 
 RDEPEND="
@@ -67,16 +67,16 @@ src_compile() {
 		group_inc="${group_inc} postgres"
 
 	use radius && \
-		group_inc="${group_inc} auth_radius misc_radius peering"
+		group_inc="${group_inc} radius"
 
 	use jabber && \
-		group_inc="${group_inc} jabber"
+		mod_inc="${mod_inc} jabber"
 
 	use cpl && \
-		group_inc="${group_inc} cpl-c"
+		mod_inc="${mod_inc} cpl-c"
 
 	use unixodbc && \
-		group_inc="${group_inc} unixodbc"
+		mod_inc="${mod_inc} unixodbc"
 
 	emake -j1 all \
 		CC_EXTRA_OPTS="${CFLAGS}" \
