@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<herd>no-herd</herd>
+	<maintainer>
+		<email>dgoncharov@users.sf.net</email>
+		<name>Dmitry Goncharov</name>
+	</maintainer>
+	<use>
+		<flag name='cpl'>cpl</flag>
+		<flag name='unixodbc'>Enable unixodbc</flag>
+	</use>
+</pkgmetadata>
+
