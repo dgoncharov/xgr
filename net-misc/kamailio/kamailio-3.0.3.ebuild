@@ -1,6 +1,6 @@
-# Copyright 1999-2005 Gentoo Foundation
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header$
+# $Header $
 
 inherit eutils flag-o-matic toolchain-funcs
 
@@ -17,11 +17,11 @@ IUSE="debug ipv6 mysql postgres radius jabber ssl cpl unixodbc"
 RDEPEND="
 	mysql? ( >=dev-db/mysql-4.1.20 )
 	radius? ( >=net-dialup/radiusclient-ng-0.5.0 )
-	postgres? ( >=dev-db/postgresql-8.0.8 )
+	postgres? ( >=dev-db/postgresql-server-8.0.8 )
 	jabber? ( dev-libs/expat )
 	ssl? ( dev-libs/openssl )
 	cpl? ( dev-libs/libxml2 )
-	unixodbc? ( dev-libs/unixOBDC-2.2.6 )"
+	unixodbc? ( >=dev-db/unixODBC-2.2.12 )"
 
 DEPEND="${RDEPEND}
 	>=sys-devel/bison-1.35
@@ -30,26 +30,6 @@ DEPEND="${RDEPEND}
 pkg_setup() {
 	enewgroup kamailio
 	enewuser  kamailio -1 -1 /dev/null kamailio
-
-	use mysql && \
-		inc_mod="${inc_mod} mysql"
-
-	use postgres && \
-		inc_mod="${inc_mod} postgres"
-
-	use radius && \
-		inc_mod="${inc_mod} auth_radius misc_radius peering"
-
-	use jabber && \
-		inc_mod="${inc_mod} jabber"
-
-	use cpl && \
-		inc_mod="${inc_mod} cpl-c"
-
-	use unixodbc && \
-		inc_mod="${inc_mod} unixodbc"
-
-	export inc_mod
 }
 
 src_unpack() {
@@ -62,58 +42,53 @@ src_unpack() {
 }
 
 src_compile() {
-	local compile_options inc_mod
+	local compile_options
+	local mod_inc="pv siputils kex"
 
+	append-flags -fPIC #TODO: needed?
 	# optimization can result in strange debuging symbols so omit it in case
 	if use debug; then
 		compile_options="${compile_options} mode=debug"
 	else
 		compile_options="${compile_options} CFLAGS=${CFLAGS}"
 	fi
-	
+
 	if use ssl; then
 		compile_options="TLS=1 ${compile_options}"
+		mod_inc="${mod_inc} tls"
 	fi
-	
-	append-flags -fPIC
+
+	local group_inc="standard"
 
 	use mysql && \
-		inc_mod="${inc_mod} mysql"
+		group_inc="${group_inc} mysql"
 
 	use postgres && \
-		inc_mod="${inc_mod} postgres"
+		group_inc="${group_inc} postgres"
 
 	use radius && \
-		inc_mod="${inc_mod} auth_radius misc_radius peering"
+		group_inc="${group_inc} auth_radius misc_radius peering"
 
 	use jabber && \
-		inc_mod="${inc_mod} jabber"
+		group_inc="${group_inc} jabber"
 
 	use cpl && \
-		inc_mod="${inc_mod} cpl-c"
+		group_inc="${group_inc} cpl-c"
 
 	use unixodbc && \
-		inc_mod="${inc_mod} unixodbc"
+		group_inc="${group_inc} unixodbc"
 
 	emake -j1 all \
-		CC="`tc-getCC`" \
-		CFLAGS="${CFLAGS}" \
-		include_modules="${inc_mod}" \
+		CC_EXTRA_OPTS="${CFLAGS}" \
 		cfg-prefix=/ \
-		cfg-target=/etc/kamailio/ || die "emake failed"
-
-#	emake all "${compile_options}" \
-#		prefix="${ROOT}"/ \
-#		include_modules="${inc_mod}" \
-#		cfg-prefix="${ROOT}"/ \
-#		cfg-target="${ROOT}"/etc/kamailio/ || die "emake failed"
+		cfg-target=/etc/kamailio/ \
+		group_include="${group_inc}" \
+		include_modules="${mod_inc}" || die "emake all failed"
 }
 
 src_install () {
-	local install_options
-
 	emake -j1 install \
-		prefix="${D}/usr" \
+		prefix="${D}"/usr \
 		bin-prefix="${D}"/usr/sbin \
 		bin-dir="" \
 		cfg-prefix="${D}"/etc \
@@ -127,11 +102,12 @@ src_install () {
 		doc-prefix="${D}"/usr/share/doc \
 		doc-dir="${PF}" || die "emake install failed"
 
-	newinitd ${FILESDIR}/kamailio.init kamailio
+	newinitd "${FILESDIR}"/kamailio.init kamailio
+	newconfd "${FILESDIR}"/kamailio.confd kamailio
 
-	# fix what the Makefile don't do
-	use mysql || \
-		rm ${D}/usr/sbin/kamailio_mysql.sh
+	chown -R root:kamailio "${D}"/usr/etc/kamailio
+	chmod 750 "${D}"/usr/etc/kamailio
+	chmod 640 "${D}"/usr/etc/kamailio/*
 }
 
 pkg_postinst() {
@@ -143,5 +119,5 @@ pkg_postinst() {
 }
 
 pkg_prerm () {
-	${D}/etc/init.d/kamailio stop >/dev/null
+	"${D}"/etc/init.d/kamailio stop >/dev/null
 }
