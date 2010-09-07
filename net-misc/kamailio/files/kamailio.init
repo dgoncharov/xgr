@@ -1,7 +1,9 @@
 #!/sbin/runscript
-# Copyright 2002 Frauenhofer Gesellschaft FOKUS, Germany.
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License, v2 or later
 # $Header$
+
+PIDFILE=/var/run/kamailio.pid
 
 depend() {
 	need net
@@ -9,14 +11,14 @@ depend() {
 
 start() {
 	ebegin "Starting Kamailio"
-	start-stop-daemon --start --quiet --pidfile /var/run/kamailio.pid \
-		--exec /usr/sbin/kamailio -- -P /var/run/kamailio.pid
+	start-stop-daemon --start --quiet --pidfile "${PIDFILE}" \
+		--exec /usr/sbin/kamailio -- -P "${PIDFILE}" ${KAMAILIO_OPTS}
 	eend $?
 }
 
 stop() {
 	ebegin "Stopping Kamailio"
-	start-stop-daemon --stop --quiet --pidfile /var/run/kamailio.pid
+	start-stop-daemon --stop --quiet --pidfile "${PIDFILE}"
 	eend $?
 }
 
