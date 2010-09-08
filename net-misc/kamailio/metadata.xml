@@ -8,7 +8,7 @@
 	</maintainer>
 	<use>
 		<flag name='cpl'>cpl</flag>
-		<flag name='unixodbc'>Enable unixodbc</flag>
+		<flag name='odbc'>Enable unixodbc</flag>
 	</use>
 </pkgmetadata>
 

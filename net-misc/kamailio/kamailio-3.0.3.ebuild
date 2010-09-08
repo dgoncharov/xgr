@@ -17,7 +17,7 @@ IUSE="ipv6 mysql radius postgres jabber ssl odbc debug cpl"
 RDEPEND="
 	mysql? ( >=dev-db/mysql-3.23.52 )
 	radius? ( >=net-dialup/radiusclient-ng-0.5.0 )
-	postgres? ( dev-db/libpq )
+	postgres? ( dev-db/postgresql-base )
 	jabber? ( dev-libs/expat )
 	ssl? ( dev-libs/openssl )
 	cpl? ( dev-libs/libxml2 )
@@ -29,30 +29,11 @@ DEPEND="${RDEPEND}
 
 src_unpack() {
 	unpack ${A}
-	cd ${S}
+	cd "${S}"
 	epatch "${FILESDIR}/${P}-makefile.diff"
 
 	use ipv6 || \
 		sed -i -e "s/-DUSE_IPV6//g" Makefile.defs
-
-#	use ssl && \
-#		sed -i -e "s:^#\(TLS=1\).*:\1:" Makefile
-#
-#	use mysql && KAMODULES="${KAMODULES} db_mysql mysql"
-#
-#	use radius && KAMODULES="${KAMODULES} auth_radius group_radius uri_radius avp_radius"
-#
-#	use jabber && KAMODULES="${KAMODULES} jabber xmpp pua_xmpp"
-#
-#	use postgres && KAMODULES="${KAMODULES} db_postgres postgres"
-#
-#	use odbc && KAMODULES="${KAMODULES} db_unixodbc unixodbc"
-#
-#	KAMODULES="${KAMODULES} presence presence_xml presence_mwi pua pua_bla pua_mi pua_usrloc"
-#	for i in ${KAMODULES};
-#	do
-#		EXCMODULES="${EXCMODULES/$i/}"
-#	done;
 }
 
 src_compile() {
@@ -114,19 +95,19 @@ src_install() {
 		doc-dir="share/doc/${P}/" \
 		install || die
 
-	newinitd ${FILESDIR}/${PN}.init ${PN}
-	newconfd ${FILESDIR}/${PN}.confd ${PN}
+	newinitd "${FILESDIR}/${PN}".init "${PN}"
+	newconfd "${FILESDIR}/${PN}".confd "${PN}"
 }
 
 pkg_preinst() {
 	if [[ -z "$(egetent passwd ${PN})" ]]; then
 		einfo "Adding ${PN} user and group"
-		enewgroup ${PN}
-		enewuser  ${PN} -1 -1 /dev/null ${PN}
+		enewgroup "${PN}"
+		enewuser  "${PN}" -1 -1 /dev/null "${PN}"
 	fi
 
-	chown -R root:${PN}  ${D}/etc/${PN}
-	chmod -R u=rwX,g=rX,o= ${D}/etc/${PN}
+	chown -R root:"${PN}"  "${D}"/etc/"${PN}"
+	chmod -R u=rwX,g=rX,o= "${D}"/etc/"${PN}"
 }
 
 pkg_postinst() {
