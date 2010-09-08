@@ -77,7 +77,7 @@ src_compile() {
 		CPU_TYPE="$(get-flag march)" \
 		mode="${mode}" \
 		TLS_HOOKS="${tls_hooks}" \
-		prefix="/usr" \
+		prefix="" \
 		group_include="${group_inc}" \
 		include_modules="${mod_inc}" \
 		cfg-prefix="" \
