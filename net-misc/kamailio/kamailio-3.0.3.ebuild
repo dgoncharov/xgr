@@ -1,64 +1,80 @@
-# Copyright 1999-2010 Gentoo Foundation
+# Copyright 1999-2008 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header $
+# $Header: $
 
 inherit eutils flag-o-matic toolchain-funcs
 
-DESCRIPTION="Kamailio - flexible and robust SIP (RFC3261) server"
+IUSE="ipv6 mysql radius postgres jabber ssl odbc"
+
+DESCRIPTION="An Open SIP Express Router"
 HOMEPAGE="http://www.kamailio.org/"
 MY_P="${P}_src"
-SRC_URI="http://kamailio.org/pub/kamailio/${PV}/src/${MY_P}.tar.gz"
+SRC_URI="http://www.${PN}.org/pub/${PN}/${PV}/src/${MY_P}.tar.gz"
 
-LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~x86 ~amd64"
-IUSE="debug ipv6 mysql postgres radius jabber ssl cpl unixodbc"
+LICENSE="GPL-2"
+KEYWORDS="~amd64 ~x86"
 
-RDEPEND="
-	mysql? ( >=dev-db/mysql-4.1.20 )
-	radius? ( >=net-dialup/radiusclient-ng-0.5.0 )
-	postgres? ( >=dev-db/postgresql-server-8.0.8 )
-	jabber? ( dev-libs/expat )
+RDEPEND=">=sys-devel/bison-1.35
+	>=sys-devel/flex-2.5.4a
 	ssl? ( dev-libs/openssl )
-	cpl? ( dev-libs/libxml2 )
-	unixodbc? ( >=dev-db/unixODBC-2.2.12 )"
+	mysql? ( >=dev-db/mysql-3.23.52 )
+	radius? ( >=net-dialup/radiusclient-ng-0.5.0 )
+	postgres? ( dev-db/libpq )
+	jabber? ( dev-libs/expat )
+	odbc? ( dev-db/unixODBC )"
 
-DEPEND="${RDEPEND}
-	>=sys-devel/bison-1.35
-	>=sys-devel/flex-2.5.4a"
-
-pkg_setup() {
-	enewgroup kamailio
-	enewuser  kamailio -1 -1 /dev/null kamailio
-}
+DEPEND="${RDEPEND}"
 
 src_unpack() {
-	unpack "${MY_P}".tar.gz
-
-	cd "${S}"
+	# unpack ser source
+	unpack ${A}
+	cd ${S}
 	epatch "${FILESDIR}/${P}-makefile.diff"
+
 	use ipv6 || \
 		sed -i -e "s/-DUSE_IPV6//g" Makefile.defs
+
+#	use ssl && \
+#		sed -i -e "s:^#\(TLS=1\).*:\1:" Makefile
+#
+#	use mysql && KAMODULES="${KAMODULES} db_mysql mysql"
+#
+#	use radius && KAMODULES="${KAMODULES} auth_radius group_radius uri_radius avp_radius"
+#
+#	use jabber && KAMODULES="${KAMODULES} jabber xmpp pua_xmpp"
+#
+#	use postgres && KAMODULES="${KAMODULES} db_postgres postgres"
+#
+#	use odbc && KAMODULES="${KAMODULES} db_unixodbc unixodbc"
+#
+#	KAMODULES="${KAMODULES} presence presence_xml presence_mwi pua pua_bla pua_mi pua_usrloc"
+#	for i in ${KAMODULES};
+#	do
+#		EXCMODULES="${EXCMODULES/$i/}"
+#	done;
 }
 
 src_compile() {
-	local compile_options
-	local mod_inc="pv siputils kex"
+	use amd64 && append-flags "-fPIC"
+
+	compile_options=""
+	mod_inc="pv siputils kex"
 
 	append-flags -fPIC #TODO: needed?
 	# optimization can result in strange debuging symbols so omit it in case
 	if use debug; then
 		compile_options="${compile_options} mode=debug"
 	else
-		compile_options="${compile_options} CFLAGS=${CFLAGS}"
+		compile_options="${compile_options} mode=release"
 	fi
 
 	if use ssl; then
-		compile_options="TLS=1 ${compile_options}"
+		compile_options="TLS_HOOKS=1 ${compile_options}"
 		mod_inc="${mod_inc} tls"
 	fi
 
-	local group_inc="standard"
+	group_inc="standard"
 
 	use mysql && \
 		group_inc="${group_inc} mysql"
@@ -75,49 +91,58 @@ src_compile() {
 	use cpl && \
 		mod_inc="${mod_inc} cpl-c"
 
-	use unixodbc && \
-		mod_inc="${mod_inc} unixodbc"
+	use odbc && \
+		mod_inc="${mod_inc} db_unixodbc unixodbc"
 
-	emake -j1 all \
-		CC_EXTRA_OPTS="${CFLAGS}" \
-		cfg-prefix=/ \
-		cfg-target=/etc/kamailio/ \
+
+	emake -j1 \
+		CC="$(tc-getCC)" \
+		CPU_TYPE="$(get-flag march)" \
+		TLS_HOOKS=1 \
+		mode="release" \
+		prefix="/usr" \
 		group_include="${group_inc}" \
-		include_modules="${mod_inc}" || die "emake all failed"
+		include_modules="${mod_inc}" \
+		cfg-prefix="" \
+		cfg-target="/etc/${PN}/" \
+		cfg all || die
 }
 
-src_install () {
-	emake -j1 install \
-		prefix="${D}"/usr \
-		bin-prefix="${D}"/usr/sbin \
-		bin-dir="" \
-		cfg-prefix="${D}"/etc \
-		cfg-dir=kamailio/ \
-		cfg-target=/etc/kamailio/ \
-		modules-prefix="${D}"/usr/$(get_libdir)/kamailio \
-		modules-dir=modules \
-		modules-target=/usr/$(get_libdir)/kamailio/modules/ \
-		man-prefix="${D}"/usr/share/man \
-		man-dir="" \
-		doc-prefix="${D}"/usr/share/doc \
-		doc-dir="${PF}" || die "emake install failed"
+src_install() {
+	emake -j1 \
+		BASEDIR="${D}" \
+		mode="release" \
+		prefix="/usr" \
+		group_include="${group_inc}" \
+		include_modules="${mod_inc}" \
+		cfg-prefix="${D}" \
+		cfg-dir="/etc/${PN}/" \
+		cfg-target="/etc/${PN}/" \
+		doc-dir="share/doc/${P}/" \
+		install || die
 
-	newinitd "${FILESDIR}"/kamailio.init kamailio
-	newconfd "${FILESDIR}"/kamailio.confd kamailio
+	newinitd ${FILESDIR}/${PN}.init ${PN}
+	newconfd ${FILESDIR}/${PN}.confd ${PN}
+}
 
-	chown -R root:kamailio "${D}"/usr/etc/kamailio
-	chmod 750 "${D}"/usr/etc/kamailio
-	chmod 640 "${D}"/usr/etc/kamailio/*
+pkg_preinst() {
+	if [[ -z "$(egetent passwd ${PN})" ]]; then
+		einfo "Adding ${PN} user and group"
+		enewgroup ${PN}
+		enewuser  ${PN} -1 -1 /dev/null ${PN}
+	fi
+
+	chown -R root:${PN}  ${D}/etc/${PN}
+	chmod -R u=rwX,g=rX,o= ${D}/etc/${PN}
 }
 
 pkg_postinst() {
-	einfo "WARNING: If you upgraded from a previous Kamailio version"
-	einfo "please read the README, NEWS and INSTALL files in the"
-	einfo "documentation directory because the database and the"
-	einfo "configuration file of old Kamailio versions are incompatible"
-	einfo "with the current version."
+	ewarn "**************************** Upgrade Warning!******************************"
+	ewarn "Please read:"
+	ewarn
+	ewarn "  http://${PN}.org/dokuwiki/doku.php/install:1.2.2-to-1.3.0"
+	ewarn
+	ewarn "For upgrade information"
+	ewarn "**************************** Upgrade Warning!******************************"
 }
 
-pkg_prerm () {
-	"${D}"/etc/init.d/kamailio stop >/dev/null
-}
