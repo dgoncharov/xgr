@@ -107,7 +107,7 @@ src_compile() {
 		include_modules="${mod_inc}" \
 		cfg-prefix="" \
 		cfg-target="/etc/${PN}/" \
-		cfg all || die
+		all || die
 }
 
 src_install() {
