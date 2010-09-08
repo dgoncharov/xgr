@@ -1,10 +1,8 @@
-# Copyright 1999-2008 Gentoo Foundation
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
 inherit eutils flag-o-matic toolchain-funcs
-
-IUSE="ipv6 mysql radius postgres jabber ssl odbc"
 
 DESCRIPTION="An Open SIP Express Router"
 HOMEPAGE="http://www.kamailio.org/"
@@ -15,19 +13,21 @@ SLOT="0"
 LICENSE="GPL-2"
 KEYWORDS="~amd64 ~x86"
 
-RDEPEND=">=sys-devel/bison-1.35
-	>=sys-devel/flex-2.5.4a
-	ssl? ( dev-libs/openssl )
+IUSE="ipv6 mysql radius postgres jabber ssl odbc debug cpl"
+RDEPEND="
 	mysql? ( >=dev-db/mysql-3.23.52 )
 	radius? ( >=net-dialup/radiusclient-ng-0.5.0 )
 	postgres? ( dev-db/libpq )
 	jabber? ( dev-libs/expat )
+	ssl? ( dev-libs/openssl )
+	cpl? ( dev-libs/libxml2 )
 	odbc? ( dev-db/unixODBC )"
 
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	>=sys-devel/bison-1.35
+	>=sys-devel/flex-2.5.4a"
 
 src_unpack() {
-	# unpack ser source
 	unpack ${A}
 	cd ${S}
 	epatch "${FILESDIR}/${P}-makefile.diff"
@@ -56,28 +56,16 @@ src_unpack() {
 }
 
 src_compile() {
-	use amd64 && append-flags "-fPIC"
-
-	compile_options=""
-	mod_inc="pv siputils kex"
-
-	append-flags -fPIC #TODO: needed?
-	# optimization can result in strange debuging symbols so omit it in case
-	if use debug; then
-		compile_options="${compile_options} mode=debug"
-	else
-		compile_options="${compile_options} mode=release"
-	fi
+	local mod_inc="pv siputils kex"
 
 	if use ssl; then
 		tls_hooks=1
-		compile_options="TLS_HOOKS=1 ${compile_options}"
 		mod_inc="${mod_inc} tls"
 	else
 		tls_hooks=0
 	fi
 
-	group_inc="standard"
+	local group_inc="standard"
 
 	use mysql && \
 		group_inc="${group_inc} mysql"
@@ -89,7 +77,7 @@ src_compile() {
 		group_inc="${group_inc} radius"
 
 	use jabber && \
-		mod_inc="${mod_inc} jabber"
+		mod_inc="${mod_inc} jabber xmpp pua_xmpp"
 
 	use cpl && \
 		mod_inc="${mod_inc} cpl-c"
@@ -97,10 +85,16 @@ src_compile() {
 	use odbc && \
 		mod_inc="${mod_inc} db_unixodbc unixodbc"
 
+	if use debug; then
+		mode=debug
+	else
+		mode=release
+	fi
 
 	emake -j1 \
 		CC="$(tc-getCC)" \
 		CPU_TYPE="$(get-flag march)" \
+		mode="${mode}" \
 		TLS_HOOKS="${tls_hooks}" \
 		prefix="/usr" \
 		group_include="${group_inc}" \
@@ -113,10 +107,7 @@ src_compile() {
 src_install() {
 	emake -j1 \
 		BASEDIR="${D}" \
-		mode="release" \
 		prefix="/usr" \
-		group_include="${group_inc}" \
-		include_modules="${mod_inc}" \
 		cfg-prefix="${D}" \
 		cfg-dir="/etc/${PN}/" \
 		cfg-target="/etc/${PN}/" \
@@ -147,4 +138,3 @@ pkg_postinst() {
 	ewarn "For upgrade information"
 	ewarn "**************************** Upgrade Warning!******************************"
 }
-
