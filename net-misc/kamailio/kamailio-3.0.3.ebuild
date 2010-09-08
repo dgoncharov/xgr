@@ -70,8 +70,11 @@ src_compile() {
 	fi
 
 	if use ssl; then
+		tls_hooks=1
 		compile_options="TLS_HOOKS=1 ${compile_options}"
 		mod_inc="${mod_inc} tls"
+	else
+		tls_hooks=0
 	fi
 
 	group_inc="standard"
@@ -98,8 +101,7 @@ src_compile() {
 	emake -j1 \
 		CC="$(tc-getCC)" \
 		CPU_TYPE="$(get-flag march)" \
-		TLS_HOOKS=1 \
-		mode="release" \
+		TLS_HOOKS="${tls_hooks}" \
 		prefix="/usr" \
 		group_include="${group_inc}" \
 		include_modules="${mod_inc}" \
