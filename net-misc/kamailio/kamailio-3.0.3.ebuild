@@ -4,7 +4,7 @@
 
 inherit eutils flag-o-matic toolchain-funcs
 
-DESCRIPTION="An Open SIP Express Router"
+DESCRIPTION="Kamailio (former OpenSER) is an Open Source SIP Server"
 HOMEPAGE="http://www.kamailio.org/"
 MY_P="${P}_src"
 SRC_URI="http://www.${PN}.org/pub/${PN}/${PV}/src/${MY_P}.tar.gz"
