@@ -4,12 +4,15 @@
 # $Header$
 
 PIDFILE=/var/run/kamailio.pid
+opts="checkconfig"
 
 depend() {
 	need net
 }
 
 start() {
+	checkconfig_real || return $?
+
 	ebegin "Starting Kamailio"
 	start-stop-daemon --start --quiet --pidfile "${PIDFILE}" \
 		--exec /usr/sbin/kamailio -- -P "${PIDFILE}" ${KAMAILIO_OPTS}
@@ -20,5 +23,28 @@ stop() {
 	ebegin "Stopping Kamailio"
 	start-stop-daemon --stop --quiet --pidfile "${PIDFILE}"
 	eend $?
+}
+
+checkconfig() {
+	ebegin "Checking kamailio config file"
+	checkconfig_real
+	eend $?
+}
+
+checkconfig_real() {
+	/usr/sbin/kamailio ${KAMAILIO_OPTS} -P "${PIDFILE}" -c >/dev/null 2>&1
+	ret=$?
+	if [ $ret -ne 0 ]; then
+		eerror "Kamailio has detected a syntax error in your configuration file:"
+		/usr/sbin/kamailio ${KAMAILIO_OPTS} -P "${PIDFILE}" -c
+	fi
+	return $ret
+}
+
+restart() {
+	checkconfig_real || return $?
+
+	svc_stop
+	svc_start
 }
 
