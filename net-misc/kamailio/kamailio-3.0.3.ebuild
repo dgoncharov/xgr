@@ -33,15 +33,28 @@ unixsock uri_db userblacklist usrloc utils xcap xcap_client xlog xmlrpc xmpp"
 # If you need to use a modules for which this ebuild does not have a proper
 # dependency, please, read http://www.kamailio.org/docs/modules/3.0.x/
 # and add fix the ebuild.
-# So far, i only tested group_standard, group_radius, tls, pv, kex, siputils.
+# So far, i only tested group_standard, group_radius, tm, pv, sl, auth,
+# auth_db, db_mysql, rr, maxfwd, usrloc, registrar, textops, nathelper,
+# xlog, kex, siputils, tls.
+# sercmd needs ncurses and readline.
 RDEPEND="
-	group_mysql? ( >=dev-db/mysql-3.23.52 )
+	>=sys-libs/ncurses-5.7-r5
+	>=sys-libs/readline-6.1_p2
+	group_mysql? ( >=dev-db/mysql-5.1.50 )
 	group_radius? ( >=net-dialup/radiusclient-ng-0.5.0 )
 	group_postgres? ( dev-db/postgresql-base )
 	jabber? ( dev-libs/expat )
-	tls? ( dev-libs/openssl )
+	tls? (
+		>=sys-libs/zlib-1.2.5-r2
+		>=dev-libs/openssl-1.0.0a-r1
+	)
 	cpl? ( dev-libs/libxml2 )
-	odbc? ( dev-db/unixODBC )"
+	odbc? ( dev-db/unixODBC )
+	db_mysql? (
+		>=dev-db/mysql-5.1.50
+		>=sys-libs/zlib-1.2.5-r2
+		>=dev-libs/openssl-1.0.0a-r1
+	)"
 
 DEPEND="${RDEPEND}
 	>=sys-devel/bison-1.35
