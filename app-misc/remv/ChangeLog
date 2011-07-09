@@ -1,5 +1,9 @@
 # ChangeLog for app-misc/remv
-# Copyright 1999-2009 Gentoo Foundation; Distributed under the GPL v2
+# Copyright 1999-2011 Gentoo Foundation; Distributed under the GPL v2
+
+*remv-023 (9 Jul 2011)
+  9 Jul 2011; Dmitry Goncharov <dgoncharov@users.sf.net>:
+  Version bump
 
 *remv-0.22 (18 Aug 2010)
   18 Aug 2010; Dmitry Goncharov <dgoncharov@users.sf.net>:
