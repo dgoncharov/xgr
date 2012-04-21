@@ -3,6 +3,11 @@
 # $Header: /var/cvsroot/gentoo-x86/dev-util/colorgcc/ChangeLog,v 1.29 2011/04/10 03:05:55 abcd Exp $
 
 
+*colorgcc-2.0.5 (21 Apr 2012)
+
+  21 Apr 2012; Dmitry Goncharov <dgoncharov@users.sf.net> colorgcc-2.0.5.ebuild
+  Version bump.
+
 *colorgcc-2.0.4 (6 Nov 2011)
 
   6 Nov 2011; Dmitry Goncharov <dgoncharov@users.sf.net> colorgcc-2.0.4.ebuild
