@@ -14,6 +14,13 @@ KEYWORDS="~amd64 ~x86"
 IUSE=""
 SLOT="0"
 
-src_install() {
+src_unpack()
+{
+    unpack ${A}
+    mv libtext-1.0 libtext-1.0.0
+}
+
+src_install()
+{
 	emake DESTDIR="${D}" install || die "emake install failed"
 }
