@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+EAPI="6"
 inherit eutils
 
 DESCRIPTION="A command line tool which moves files and directories by regular expressions"
