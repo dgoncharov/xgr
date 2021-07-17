@@ -5,8 +5,8 @@
 inherit eutils
 
 DESCRIPTION="A command line tool which moves files and directories by regular expressions"
-HOMEPAGE="http://remv.sf.net"
-SRC_URI="mirror://sourceforge/remv/${P}.tar.gz"
+HOMEPAGE="https://github.com/dgoncharov/remv"
+SRC_URI="https://github.com/dgoncharov/remv/archive/${P}.tar.gz"
 LICENSE="BSD"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
